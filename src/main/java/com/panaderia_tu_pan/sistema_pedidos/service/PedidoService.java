@@ -31,5 +31,23 @@ public class PedidoService {
         pedidoRepository.guardar(pedido);
     }
 
+    // Avanzar estado
+    public void avanzarEstado(Long idPedido) {
 
+        Pedido pedido =
+                pedidoRepository.buscarPorId(idPedido);
+
+        if (pedido != null) {
+
+            if (pedido.getEstado().equals("NUEVO")) {
+
+                pedido.setEstado("EN_PREPARACION");
+
+            } else if (pedido.getEstado().equals("EN_PREPARACION")) {
+
+                pedido.setEstado("ENTREGADO");
+
+            }
+        }
+    }
 }
