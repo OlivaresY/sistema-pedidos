@@ -37,12 +37,6 @@ public class PedidoController {
     @PostMapping("/pedidos/guardar")
     public String guardarPedido(@ModelAttribute Pedido pedido) {
 
-        Long productoId = pedido.getProducto().getId();
-
-        pedido.setProducto(
-                productoService.buscarPorId(productoId)
-        );
-
         pedidoService.crearPedido(pedido);
 
         return "redirect:/pedidos/historial";
