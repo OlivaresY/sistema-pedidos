@@ -12,22 +12,22 @@ public class PedidoRepository {
     // Lista donde se almacenarán los pedidos
     private final List<Pedido> listaPedidos = new ArrayList<>();
 
-    // Simula un ID autoincremental
+    //Simula un ID autoincremental
     private Long idContador = 1L;
 
-    // Obtener todos los pedidos
+    //Obtener todos los pedidos
     public List<Pedido> obtenerTodos() {
         return listaPedidos;
     }
 
-    // Guardar un pedido
+    //Guardar un pedido
     public void guardar(Pedido pedido) {
         pedido.setId(idContador);
         listaPedidos.add(pedido);
         idContador++;
     }
 
-    // Buscar pedido por ID
+    //Buscar pedido por ID
     public Pedido buscarPorId(Long id) {
         return listaPedidos.stream()
                 .filter(p -> p.getId().equals(id))

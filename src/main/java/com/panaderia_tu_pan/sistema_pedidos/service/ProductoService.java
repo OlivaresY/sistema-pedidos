@@ -15,7 +15,7 @@ public class ProductoService {
     }
 
     public List<Producto> listaPrdocutos(){
-        // Usamos findAll() que viene de JpaRepository
+
         return productoRepository.findAll();
     }
 }

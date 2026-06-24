@@ -19,7 +19,7 @@ public class PedidoService {
         return pedidoRepository.obtenerTodos();
     }
 
-    // Crear pedido
+    //Crear pedido
     public void crearPedido(Pedido pedido) {
 
         pedido.setTotal(
@@ -31,7 +31,7 @@ public class PedidoService {
         pedidoRepository.guardar(pedido);
     }
 
-    // Avanzar estado
+    //Avanzar estado
     public void avanzarEstado(Long idPedido) {
 
         Pedido pedido =
