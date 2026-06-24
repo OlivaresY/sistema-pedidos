@@ -1,0 +1,15 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: mysql_sistema_pedidos
+    restart: always
+    environment:
+      #Se usa un usuario personalizado para aplicarl el pricipio
+      MYSQL_DATABASE: panaderia_db
+      MYSQL_USER: user_panaderia      #usuario personalizado
+      MYSQL_PASSWORD: password123     #contraseña personalizada
+      MYSQL_ROOT_PASSWORD: rootpassword #contraseña (root)
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql-init:/docker-entrypoint-initdb.d
