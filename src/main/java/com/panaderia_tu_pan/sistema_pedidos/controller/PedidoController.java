@@ -36,8 +36,7 @@ public class PedidoController {
 
     @PostMapping("/pedidos/guardar")
     public String guardarPedido(@ModelAttribute Pedido pedido) {
-
-        pedidoService.crearPedido(pedido);
+        pedidoService.guardar(pedido);
 
         return "redirect:/pedidos/historial";
     }
