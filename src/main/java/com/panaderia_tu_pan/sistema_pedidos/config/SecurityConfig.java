@@ -20,9 +20,9 @@ public class SecurityConfig {
                         .requestMatchers("/", "/productos/menu", "/css/**", "/js/**").permitAll()
 
                         //acceso por ROLES
-                        .requestMatchers("/pedidos/nuevo").hasAnyRole("CLIENTE", "ADMIN")
-                        .requestMatchers("/pedidos/historial").hasAnyRole("CLIENTE", "ADMIN")
-                        .requestMatchers("/admin/**").hasRole("ADMIN") //solo admin puede gestionar estados
+                        .requestMatchers("/pedidos/nuevo").hasAnyAuthority("ROLE_CLIENTE", "ROLE_ADMIN")
+                        .requestMatchers("/pedidos/historial").hasAnyAuthority("ROLE_CLIENTE", "ROLE_ADMIN")
+                        .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN") //solo admin puede gestionar estados
 
                         .anyRequest().authenticated()
                 )
