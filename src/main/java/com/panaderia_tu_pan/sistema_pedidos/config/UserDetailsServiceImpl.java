@@ -28,7 +28,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 usuario.getUsername(),
                 usuario.getPassword(),
                 usuario.getRoles().stream()
-                        .map(role -> new SimpleGrantedAuthority(role.getNombre()))
+                        .map(role -> {
+                            String nombreRol = role.getNombre();
+                            // Si ya trae ROLE_, lo dejamos; si no, se lo ponemos
+                            return nombreRol.startsWith("ROLE_") ?
+                                    new SimpleGrantedAuthority(nombreRol) :
+                                    new SimpleGrantedAuthority("ROLE_" + nombreRol);
+                        })
                         .collect(Collectors.toList())
         );
     }
