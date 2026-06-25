@@ -3,7 +3,6 @@ package com.panaderia_tu_pan.sistema_pedidos.service;
 import com.panaderia_tu_pan.sistema_pedidos.model.Pedido;
 import com.panaderia_tu_pan.sistema_pedidos.repository.PedidoRepository;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 @Service
@@ -16,38 +15,23 @@ public class PedidoService {
     }
 
     public List<Pedido> listarPedidos() {
-        return pedidoRepository.obtenerTodos();
+        return pedidoRepository.findAll(); //findAll()
     }
 
-    //Crear pedido
     public void crearPedido(Pedido pedido) {
-
-        pedido.setTotal(
-                pedido.getProducto().getPrecio()
-        );
-
         pedido.setEstado("NUEVO");
-
-        pedidoRepository.guardar(pedido);
+        pedidoRepository.save(pedido); //save()
     }
 
-    //Avanzar estado
     public void avanzarEstado(Long idPedido) {
-
-        Pedido pedido =
-                pedidoRepository.buscarPorId(idPedido);
-
-        if (pedido != null) {
-
-            if (pedido.getEstado().equals("NUEVO")) {
-
+        //findById devuelve Optional
+        pedidoRepository.findById(idPedido).ifPresent(pedido -> {
+            if ("NUEVO".equals(pedido.getEstado())) {
                 pedido.setEstado("EN_PREPARACION");
-
-            } else if (pedido.getEstado().equals("EN_PREPARACION")) {
-
+            } else if ("EN_PREPARACION".equals(pedido.getEstado())) {
                 pedido.setEstado("ENTREGADO");
-
             }
-        }
+            pedidoRepository.save(pedido); //guardar cambios
+        });
     }
 }
