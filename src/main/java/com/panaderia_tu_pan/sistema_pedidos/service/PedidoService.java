@@ -15,23 +15,23 @@ public class PedidoService {
     }
 
     public List<Pedido> listarPedidos() {
-        return pedidoRepository.findAll(); //findAll()
+        return pedidoRepository.findAll();
     }
 
-    public void crearPedido(Pedido pedido) {
+    //cambiamos el nombre y el tipo de retorno
+    public Pedido guardar(Pedido pedido) {
         pedido.setEstado("NUEVO");
-        pedidoRepository.save(pedido); //save()
+        return pedidoRepository.save(pedido); //retornamos el objeto guardado
     }
 
     public void avanzarEstado(Long idPedido) {
-        //findById devuelve Optional
         pedidoRepository.findById(idPedido).ifPresent(pedido -> {
             if ("NUEVO".equals(pedido.getEstado())) {
                 pedido.setEstado("EN_PREPARACION");
             } else if ("EN_PREPARACION".equals(pedido.getEstado())) {
                 pedido.setEstado("ENTREGADO");
             }
-            pedidoRepository.save(pedido); //guardar cambios
+            pedidoRepository.save(pedido);
         });
     }
 }
