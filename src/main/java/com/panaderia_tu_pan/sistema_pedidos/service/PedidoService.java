@@ -4,7 +4,6 @@ import com.panaderia_tu_pan.sistema_pedidos.model.Pedido;
 import com.panaderia_tu_pan.sistema_pedidos.repository.PedidoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 
 @Service
@@ -21,10 +20,8 @@ public class PedidoService {
         return pedidoRepository.findAll();
     }
 
-    //cambiamos el nombre y el tipo de retorno
     public Pedido guardar(Pedido pedido) {
-        pedido.setEstado("NUEVO");
-        return pedidoRepository.save(pedido); //retornamos el objeto guardado
+        return pedidoRepository.saveAndFlush(pedido);
     }
 
     public void avanzarEstado(Long idPedido) {
@@ -34,7 +31,7 @@ public class PedidoService {
             } else if ("EN_PREPARACION".equals(pedido.getEstado())) {
                 pedido.setEstado("ENTREGADO");
             }
-            pedidoRepository.save(pedido);
+            pedidoRepository.saveAndFlush(pedido);
         });
     }
 }

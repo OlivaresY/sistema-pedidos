@@ -17,8 +17,12 @@ public class ProductoService {
         this.productoRepository = productoRepository;
     }
 
-    public List<Producto> listaPrdocutos(){
-
+    public List<Producto> listaPrdocutos() {
         return productoRepository.findAll();
+    }
+
+    // Método nuevo añadido para buscar producto por ID de forma segura
+    public Producto buscarPorId(Long id) {
+        return productoRepository.findById(id).orElse(null);
     }
 }

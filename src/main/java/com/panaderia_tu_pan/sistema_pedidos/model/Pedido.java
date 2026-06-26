@@ -19,16 +19,17 @@ public class Pedido {
 
     @NotBlank(message = "El nombre del cliente es obligatorio")
     @Size(min = 3, message = "El nombre debe tener al menos 3 caracteres")
+    @Column(nullable = false)
     private String nombreCliente;
 
     @NotNull(message = "Debe seleccionar un producto")
     @ManyToOne
-    @JoinColumn(name = "producto_id")
+    @JoinColumn(name = "producto_id", nullable = false)
     private Producto producto;
 
-    @DecimalMin(value = "0.01", message = "El total debe ser mayor a 0")
+    @Column(nullable = false)
     private double total;
 
-    @NotBlank(message = "El estado es obligatorio")
+    @Column(nullable = false)
     private String estado;
 }
