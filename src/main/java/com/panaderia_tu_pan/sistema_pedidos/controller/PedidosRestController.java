@@ -5,6 +5,8 @@ import com.panaderia_tu_pan.sistema_pedidos.service.PedidoService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,28 +17,33 @@ public class PedidosRestController {
 
     private final PedidoService pedidoService;
 
-    //inyección por constructor
+    // Inyección por constructor
     public PedidosRestController(PedidoService pedidoService) {
         this.pedidoService = pedidoService;
     }
 
-    //listar todos los pedidos
+    // Listar pedidos filtrando por usuario logueado o mostrando todo si es ADMIN
     @GetMapping
-    public List<Pedido> listarPedidos() {
-        return pedidoService.listarPedidos();
+    public List<Pedido> listarPedidos(Authentication authentication) {
+        String username = authentication.getName();
+
+        // Verificamos si es ADMIN
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch(role -> role.equals("ROLE_ADMIN"));
+
+        // Llamamos al servicio con los parámetros requeridos
+        return pedidoService.listarPedidos(username, isAdmin);
     }
 
-    //crear un nuevo pedido con validación
+    // Crear un nuevo pedido con validación
     @PostMapping
     public ResponseEntity<Pedido> crearPedido(@Valid @RequestBody Pedido pedido) {
-        // @Valid asegura que los datos del 'pedido' cumplan con las reglas de Pedido.java
         Pedido nuevoPedido = pedidoService.guardar(pedido);
-
-        // Retornamos 201 Created junto con el objeto guardado
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevoPedido);
     }
 
-    //cambiar el estado de un pedido
+    // Cambiar el estado de un pedido
     @PatchMapping("/{id}/avanzar")
     public ResponseEntity<Void> avanzarEstado(@PathVariable Long id) {
         pedidoService.avanzarEstado(id);
