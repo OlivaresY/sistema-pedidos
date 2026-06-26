@@ -10,7 +10,6 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
     <div class="container">
         <a class="navbar-brand" href="#">Panadería Tu Pan</a>
-
         <div class="navbar-nav">
             <a class="nav-link" th:href="@{/productos/menu}">Ver Menú</a>
             <a class="nav-link active" th:href="@{/pedidos/nuevo}">Hacer Pedido</a>
@@ -20,51 +19,46 @@
 </nav>
 
 <div class="container">
-
     <div class="card shadow">
         <div class="card-header bg-primary text-white">
             <h3>Realizar Pedido</h3>
         </div>
-
         <div class="card-body">
 
-            <form th:action="@{/pedidos/guardar}" method="post">
+            <form th:action="@{/pedidos/guardar}" th:object="${pedido}" method="post">
 
                 <div class="mb-3">
                     <label class="form-label">Nombre del Cliente</label>
                     <input type="text"
                            class="form-control"
-                           name="nombreCliente"
-                           required>
+                           th:classappend="${#fields.hasErrors('nombreCliente')} ? 'is-invalid' : ''"
+                           th:field="*{nombreCliente}">
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('nombreCliente')}" th:errors="*{nombreCliente}">
+                        Error en nombre
+                    </div>
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label">Producto</label>
-
                     <select class="form-select"
-                            name="producto.id"
-                            required>
-
+                            th:classappend="${#fields.hasErrors('producto')} ? 'is-invalid' : ''"
+                            th:field="*{producto.id}">
                         <option value="">Seleccione un producto</option>
-
                         <option th:each="prod : ${productos}"
                                 th:value="${prod.id}"
                                 th:text="${prod.nombre}">
                         </option>
-
                     </select>
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('producto')}" th:errors="*{producto}">
+                        Error en producto
+                    </div>
                 </div>
 
-                <button type="submit"
-                        class="btn btn-success">
-                    Crear Pedido
-                </button>
-
+                <button type="submit" class="btn btn-success">Crear Pedido</button>
             </form>
 
         </div>
     </div>
-
 </div>
 
 </body>
