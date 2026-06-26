@@ -20,8 +20,18 @@ public class PedidoService {
         return pedidoRepository.findAll();
     }
 
+    // --- ESTE ES EL MÉTODO QUE TE FALTA ---
+    public Pedido buscarPorId(Long id) {
+        return pedidoRepository.findById(id).orElse(null);
+    }
+
     public Pedido guardar(Pedido pedido) {
         return pedidoRepository.saveAndFlush(pedido);
+    }
+
+    // --- Y ESTE PARA ELIMINAR ---
+    public void eliminarPedido(Long id) {
+        pedidoRepository.deleteById(id);
     }
 
     public void avanzarEstado(Long idPedido) {

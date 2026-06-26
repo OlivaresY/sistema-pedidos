@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="es">
 <head>
     <meta charset="UTF-8">
     <title>Historial de Pedidos - Panadería Tu Pan</title>
@@ -33,19 +35,25 @@
             <th>Producto</th>
             <th>Total</th>
             <th>Estado</th>
-        </tr>
+            <th>Acciones</th> </tr>
         </thead>
         <tbody>
         <tr th:each="pedido : ${pedidos}">
             <td th:text="${pedido.id}"></td>
             <td th:text="${pedido.nombreCliente}"></td>
-
             <td th:text="${pedido.producto != null ? pedido.producto.nombre : 'Producto no disponible'}"></td>
-
             <td th:text="'₡' + ${#numbers.formatDecimal(pedido.total, 1, 2)}"></td>
-
             <td>
                 <span class="badge bg-primary" th:text="${pedido.estado}"></span>
+            </td>
+            <td>
+                <form th:action="@{/pedidos/eliminar/{id}(id=${pedido.id})}" method="post">
+                    <button type="submit"
+                            class="btn btn-danger btn-sm"
+                            onclick="return confirm('¿Estás seguro de eliminar este pedido?');">
+                        X
+                    </button>
+                </form>
             </td>
         </tr>
         </tbody>

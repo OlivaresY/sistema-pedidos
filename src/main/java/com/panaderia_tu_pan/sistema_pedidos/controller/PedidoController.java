@@ -87,4 +87,31 @@ public class PedidoController {
         model.addAttribute("pedidos", pedidoService.listarPedidos());
         return "pedidos/historial";
     }
+
+    @PostMapping("/eliminar/{id}")
+    public String eliminarPedido(@PathVariable Long id, Authentication authentication) {
+        //buscamos el pedido para verificar quién es el dueño
+        Pedido pedido = pedidoService.buscarPorId(id); // Asegúrate de tener este método en tu Service
+
+        if (pedido == null) {
+            return "redirect:/pedidos/historial?error=noencontrado";
+        }
+
+        //verificamos si es ADMIN
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch(role -> role.equals("ROLE_ADMIN"));
+
+        // si NO es admin Y el nombre del pedido no coincide con el usuario logueado, prohibimos el borrado
+        if (!isAdmin && !pedido.getNombreCliente().equals(authentication.getName())) {
+            log.warn("Intento de borrado no autorizado por: {}", authentication.getName());
+            return "redirect:/pedidos/historial?error=noautorizado";
+        }
+
+        //si pasó las validaciones, eliminamos
+        pedidoService.eliminarPedido(id);
+        log.info("Pedido con ID {} eliminado por: {}", id, authentication.getName());
+
+        return "redirect:/pedidos/historial";
+    }
 }
