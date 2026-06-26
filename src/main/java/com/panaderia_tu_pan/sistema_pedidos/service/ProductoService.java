@@ -3,9 +3,12 @@ package com.panaderia_tu_pan.sistema_pedidos.service;
 import com.panaderia_tu_pan.sistema_pedidos.model.Producto;
 import com.panaderia_tu_pan.sistema_pedidos.repository.ProductoRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 @Service
+@Transactional
 public class ProductoService {
 
     private final ProductoRepository productoRepository;

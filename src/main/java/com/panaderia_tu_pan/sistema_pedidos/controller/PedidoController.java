@@ -6,6 +6,8 @@ import com.panaderia_tu_pan.sistema_pedidos.service.ProductoService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
+import org.springframework.validation.BindingResult;
 
 @Controller
 public class PedidoController {
@@ -35,9 +37,12 @@ public class PedidoController {
     }
 
     @PostMapping("/pedidos/guardar")
-    public String guardarPedido(@ModelAttribute Pedido pedido) {
+    public String guardarPedido(@Valid @ModelAttribute Pedido pedido, BindingResult result) {
+        if (result.hasErrors()) {
+            // Si hay errores, regresamos al formulario para que los vea
+            return "pedidos/crear";
+        }
         pedidoService.guardar(pedido);
-
         return "redirect:/pedidos/historial";
     }
 
