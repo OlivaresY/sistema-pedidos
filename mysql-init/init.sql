@@ -1,16 +1,15 @@
--- crea la tabla inicial si no existe
-CREATE TABLE IF NOT EXISTS productos (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(255) NOT NULL,
-    descripcion VARCHAR(255),
-    precio DOUBLE NOT NULL,
-    disponible BOOLEAN DEFAULT TRUE
-    );
+-- roles - IGNORE para que no falle si ya existen-
+INSERT IGNORE INTO roles (id, nombre) VALUES (1, 'ROLE_ADMIN'), (2, 'ROLE_CLIENTE');
 
--- Productos base
-INSERT INTO productos (nombre, descripcion, precio, disponible) VALUES
-    ('Baguette Tradicional', 'Pan frances crujiente recien horneado', 1200.0, true),
-    ('Croissant de Mantequilla', 'Hojaldrado suave y calientito', 1500.0, true),
-    ('Empanada', 'Rellena de Queso, Carne ó Pollo', 1300.0, true),
-    ('Cafe Negro', 'Cafe recien chorreado en su mesa', 800.0, true),
-    ('Capuccino', 'Cafe equilibrio perfecto entre espresso, leche vaporizada y espuma', 2000.0, true);
+-- usuarios clave
+-- hash $2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1cnR.MOpn2.xW equivale a la contraseña
+INSERT IGNORE INTO usuarios (id, username, password) VALUES
+(1, 'Chuck_Norris', '$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1cnR.MOpn2.xW'),
+(2, 'Yordy_olivares', '$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1cnR.MOpn2.xW'),
+(3, 'Emmanuel_Correa', '$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1cnR.MOpn2.xW');
+
+-- roles Chuck=Admin
+INSERT IGNORE INTO usuarios_roles (usuario_id, role_id) VALUES
+(1, 1),
+(2, 2),
+(3, 2);
