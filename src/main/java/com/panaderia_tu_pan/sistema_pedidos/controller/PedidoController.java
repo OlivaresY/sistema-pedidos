@@ -31,19 +31,15 @@ public class PedidoController {
     public String mostrarFormulario(Model model, Authentication authentication) {
         Pedido pedido = new Pedido();
 
-        //determinar si el usuario logueado es ADMIN
-        boolean isAdmin = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .anyMatch(role -> role.equals("ROLE_ADMIN"));
+        boolean isAdmin = esAdmin(authentication);
 
-        //si NO es admin, prellenamos con su nombre de usuario
         if (!isAdmin) {
             pedido.setNombreCliente(authentication.getName());
         }
 
         model.addAttribute("pedido", pedido);
         model.addAttribute("productos", productoService.listaPrdocutos());
-        model.addAttribute("isAdmin", isAdmin); // Para usar en la vista
+        model.addAttribute("isAdmin", isAdmin);
         return "pedidos/crear";
     }
 
@@ -51,10 +47,7 @@ public class PedidoController {
     public String guardarPedido(@Valid @ModelAttribute Pedido pedido, BindingResult result,
                                 Authentication authentication, Model model) {
 
-        //seguridad: Si no es admin, forzamos que el pedido sea del usuario logueado
-        boolean isAdmin = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .anyMatch(role -> role.equals("ROLE_ADMIN"));
+        boolean isAdmin = esAdmin(authentication);
 
         if (!isAdmin) {
             pedido.setNombreCliente(authentication.getName());
@@ -83,35 +76,40 @@ public class PedidoController {
     }
 
     @GetMapping("/historial")
-    public String historial(Model model) {
-        model.addAttribute("pedidos", pedidoService.listarPedidos());
+    public String historial(Model model, Authentication authentication) {
+        boolean isAdmin = esAdmin(authentication);
+        String username = authentication.getName();
+
+        //servicio filtra los pedidos según el usuario y rol
+        model.addAttribute("pedidos", pedidoService.listarPedidos(username, isAdmin));
         return "pedidos/historial";
     }
 
     @PostMapping("/eliminar/{id}")
     public String eliminarPedido(@PathVariable Long id, Authentication authentication) {
-        //buscamos el pedido para verificar quién es el dueño
-        Pedido pedido = pedidoService.buscarPorId(id); // Asegúrate de tener este método en tu Service
+        Pedido pedido = pedidoService.buscarPorId(id);
 
         if (pedido == null) {
             return "redirect:/pedidos/historial?error=noencontrado";
         }
 
-        //verificamos si es ADMIN
-        boolean isAdmin = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .anyMatch(role -> role.equals("ROLE_ADMIN"));
+        boolean isAdmin = esAdmin(authentication);
 
-        // si NO es admin Y el nombre del pedido no coincide con el usuario logueado, prohibimos el borrado
         if (!isAdmin && !pedido.getNombreCliente().equals(authentication.getName())) {
             log.warn("Intento de borrado no autorizado por: {}", authentication.getName());
             return "redirect:/pedidos/historial?error=noautorizado";
         }
 
-        //si pasó las validaciones, eliminamos
         pedidoService.eliminarPedido(id);
         log.info("Pedido con ID {} eliminado por: {}", id, authentication.getName());
 
         return "redirect:/pedidos/historial";
+    }
+
+    //evitar repetir la lógica del rol ADMIN
+    private boolean esAdmin(Authentication authentication) {
+        return authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch(role -> role.equals("ROLE_ADMIN"));
     }
 }

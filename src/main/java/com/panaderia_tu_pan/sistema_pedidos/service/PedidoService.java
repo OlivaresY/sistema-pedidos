@@ -16,11 +16,15 @@ public class PedidoService {
         this.pedidoRepository = pedidoRepository;
     }
 
-    public List<Pedido> listarPedidos() {
-        return pedidoRepository.findAll();
+    // Método actualizado: Filtra según si es ADMIN o cliente
+    public List<Pedido> listarPedidos(String username, boolean isAdmin) {
+        if (isAdmin) {
+            return pedidoRepository.findAll();
+        } else {
+            return pedidoRepository.findByNombreCliente(username);
+        }
     }
 
-    // --- ESTE ES EL MÉTODO QUE TE FALTA ---
     public Pedido buscarPorId(Long id) {
         return pedidoRepository.findById(id).orElse(null);
     }
@@ -29,7 +33,6 @@ public class PedidoService {
         return pedidoRepository.saveAndFlush(pedido);
     }
 
-    // --- Y ESTE PARA ELIMINAR ---
     public void eliminarPedido(Long id) {
         pedidoRepository.deleteById(id);
     }
