@@ -7,6 +7,8 @@ import com.panaderia_tu_pan.sistema_pedidos.service.ProductoService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -26,14 +28,37 @@ public class PedidoController {
     }
 
     @GetMapping("/nuevo")
-    public String mostrarFormulario(Model model) {
-        model.addAttribute("pedido", new Pedido());
+    public String mostrarFormulario(Model model, Authentication authentication) {
+        Pedido pedido = new Pedido();
+
+        //determinar si el usuario logueado es ADMIN
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch(role -> role.equals("ROLE_ADMIN"));
+
+        //si NO es admin, prellenamos con su nombre de usuario
+        if (!isAdmin) {
+            pedido.setNombreCliente(authentication.getName());
+        }
+
+        model.addAttribute("pedido", pedido);
         model.addAttribute("productos", productoService.listaPrdocutos());
+        model.addAttribute("isAdmin", isAdmin); // Para usar en la vista
         return "pedidos/crear";
     }
 
     @PostMapping("/guardar")
-    public String guardarPedido(@Valid @ModelAttribute Pedido pedido, BindingResult result, Model model) {
+    public String guardarPedido(@Valid @ModelAttribute Pedido pedido, BindingResult result,
+                                Authentication authentication, Model model) {
+
+        //seguridad: Si no es admin, forzamos que el pedido sea del usuario logueado
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch(role -> role.equals("ROLE_ADMIN"));
+
+        if (!isAdmin) {
+            pedido.setNombreCliente(authentication.getName());
+        }
 
         pedido.setEstado("NUEVO");
 
@@ -48,6 +73,7 @@ public class PedidoController {
         if (result.hasErrors()) {
             log.warn("Errores en formulario de pedido para cliente: {}", pedido.getNombreCliente());
             model.addAttribute("productos", productoService.listaPrdocutos());
+            model.addAttribute("isAdmin", isAdmin);
             return "pedidos/crear";
         }
 
