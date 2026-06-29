@@ -24,7 +24,8 @@ public class SecurityConfig {
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .defaultSuccessUrl("/pedidos/historial", true)
+                        // Se cambió de "/pedidos/historial" a "/productos/menu" para redirigir al menú al loguearse
+                        .defaultSuccessUrl("/productos/menu", true)
                         .permitAll()
                 )
                 .logout(logout -> logout
