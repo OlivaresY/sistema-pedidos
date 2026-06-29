@@ -1,32 +1,43 @@
 package com.panaderia_tu_pan.sistema_pedidos.controller;
 
 import com.panaderia_tu_pan.sistema_pedidos.service.ProductoService;
+import org.springframework.security.core.Authentication; // Necesario para evitar error
+import org.springframework.security.core.GrantedAuthority; // Necesario para esAdmin
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-//Le dice a spring que esta clase resolvera rutas URÑ web y devolvera vistas HTML
 @Controller
 public class ProductoController {
 
-    //Inyectamos el Service
     private final ProductoService productoService;
 
-    public ProductoController(ProductoService productoService){
+    public ProductoController(ProductoService productoService) {
         this.productoService = productoService;
     }
 
-    //end point
     @GetMapping("/productos/menu")
-    public String verMenu(Model model){
+    public String verMenu(Model model, Authentication authentication) {
+        // Pedimos los productos al Service
+        model.addAttribute("productos", productoService.listaPrdocutos());
 
-        //Pedimos los productos al Service
-        var lista = productoService.listaPrdocutos();
+        // Verificamos si el usuario está autenticado para enviar los datos al menú
+        if (authentication != null && authentication.isAuthenticated()) {
+            model.addAttribute("username", authentication.getName());
+            model.addAttribute("isAdmin", esAdmin(authentication));
+        } else {
+            // Valores por defecto si no hay nadie logueado
+            model.addAttribute("username", "Invitado");
+            model.addAttribute("isAdmin", false);
+        }
 
-        //Inyectamos la lista en el Model
-        model.addAttribute("productos", lista);
-
-        //Devolvemos el nombre dela plantilla HTML
         return "productos/menu";
+    }
+
+    // Método necesario para que el compilador no marque error
+    private boolean esAdmin(Authentication authentication) {
+        return authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch(role -> role.equals("ROLE_ADMIN"));
     }
 }

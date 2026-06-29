@@ -30,7 +30,6 @@ public class PedidoController {
     @GetMapping("/nuevo")
     public String mostrarFormulario(Model model, Authentication authentication) {
         Pedido pedido = new Pedido();
-
         boolean isAdmin = esAdmin(authentication);
 
         if (!isAdmin) {
@@ -40,6 +39,7 @@ public class PedidoController {
         model.addAttribute("pedido", pedido);
         model.addAttribute("productos", productoService.listaPrdocutos());
         model.addAttribute("isAdmin", isAdmin);
+        model.addAttribute("username", authentication.getName()); // Agregado
         return "pedidos/crear";
     }
 
@@ -80,8 +80,9 @@ public class PedidoController {
         boolean isAdmin = esAdmin(authentication);
         String username = authentication.getName();
 
-        //servicio filtra los pedidos según el usuario y rol
         model.addAttribute("pedidos", pedidoService.listarPedidos(username, isAdmin));
+        model.addAttribute("username", username); // Agregado
+        model.addAttribute("isAdmin", isAdmin);   // Agregado
         return "pedidos/historial";
     }
 

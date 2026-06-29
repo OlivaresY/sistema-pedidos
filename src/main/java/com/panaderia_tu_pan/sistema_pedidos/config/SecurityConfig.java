@@ -16,22 +16,22 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        //acceso público
-                        .requestMatchers("/", "/productos/menu", "/css/**", "/js/**").permitAll()
-
-                        //acceso por ROLES
-                        .requestMatchers("/pedidos/nuevo").hasAnyAuthority("ROLE_CLIENTE", "ROLE_ADMIN")
-                        .requestMatchers("/pedidos/historial").hasAnyAuthority("ROLE_CLIENTE", "ROLE_ADMIN")
-                        .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN") //solo admin puede gestionar estados
-
+                        .requestMatchers("/", "/productos/menu", "/css/**", "/js/**", "/login").permitAll()
+                        // Autorizamos explícitamente las rutas de pedidos y su guardado
+                        .requestMatchers("/pedidos/nuevo", "/pedidos/guardar", "/pedidos/historial", "/pedidos/eliminar/**").hasAnyAuthority("ROLE_CLIENTE", "ROLE_ADMIN")
+                        .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
+                        .loginPage("/login")
                         .defaultSuccessUrl("/pedidos/historial", true)
                         .permitAll()
                 )
-                .logout(logout -> logout.permitAll());
-
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login?logout")
+                        .permitAll()
+                );
         return http.build();
     }
 
