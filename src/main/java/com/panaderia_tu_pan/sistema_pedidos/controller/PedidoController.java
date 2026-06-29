@@ -5,8 +5,6 @@ import com.panaderia_tu_pan.sistema_pedidos.model.Producto;
 import com.panaderia_tu_pan.sistema_pedidos.service.PedidoService;
 import com.panaderia_tu_pan.sistema_pedidos.service.ProductoService;
 import jakarta.validation.Valid;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
@@ -18,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/pedidos")
 public class PedidoController {
 
-    private static final Logger log = LoggerFactory.getLogger(PedidoController.class);
     private final PedidoService pedidoService;
     private final ProductoService productoService;
 
@@ -31,47 +28,42 @@ public class PedidoController {
     public String mostrarFormulario(Model model, Authentication authentication) {
         Pedido pedido = new Pedido();
         boolean isAdmin = esAdmin(authentication);
-
-        if (!isAdmin) {
-            pedido.setNombreCliente(authentication.getName());
-        }
+        if (!isAdmin) pedido.setNombreCliente(authentication.getName());
 
         model.addAttribute("pedido", pedido);
         model.addAttribute("productos", productoService.listaPrdocutos());
         model.addAttribute("isAdmin", isAdmin);
-        model.addAttribute("username", authentication.getName()); // Agregado
+        model.addAttribute("username", authentication.getName());
         return "pedidos/crear";
     }
 
     @PostMapping("/guardar")
-    public String guardarPedido(@Valid @ModelAttribute Pedido pedido, BindingResult result,
-                                Authentication authentication, Model model) {
+    public String guardarPedido(@Valid @ModelAttribute Pedido pedido,
+                                @RequestParam(value = "productoId", required = false) Long productoId,
+                                BindingResult result, Authentication authentication, Model model) {
 
         boolean isAdmin = esAdmin(authentication);
+        if (!isAdmin) pedido.setNombreCliente(authentication.getName());
 
-        if (!isAdmin) {
-            pedido.setNombreCliente(authentication.getName());
+        //validamos el producto manualmente
+        if (productoId == null) {
+            model.addAttribute("errorProducto", "Por favor, seleccione un producto.");
         }
 
-        pedido.setEstado("NUEVO");
-
-        if (pedido.getProducto() != null && pedido.getProducto().getId() != null) {
-            Producto producto = productoService.buscarPorId(pedido.getProducto().getId());
-            if (producto != null) {
-                pedido.setProducto(producto);
-                pedido.setTotal(producto.getPrecio());
-            }
-        }
-
-        if (result.hasErrors()) {
-            log.warn("Errores en formulario de pedido para cliente: {}", pedido.getNombreCliente());
+        //si el nombre tiene errores o no se eligió producto, volvemos al formulario
+        if (result.hasErrors() || productoId == null) {
             model.addAttribute("productos", productoService.listaPrdocutos());
             model.addAttribute("isAdmin", isAdmin);
+            model.addAttribute("username", authentication.getName());
             return "pedidos/crear";
         }
 
+        Producto producto = productoService.buscarPorId(productoId);
+        pedido.setProducto(producto);
+        pedido.setTotal(producto.getPrecio());
+        pedido.setEstado("NUEVO");
+
         pedidoService.guardar(pedido);
-        log.info("Pedido creado exitosamente para: {}", pedido.getNombreCliente());
         return "redirect:/pedidos/historial";
     }
 
@@ -79,37 +71,24 @@ public class PedidoController {
     public String historial(Model model, Authentication authentication) {
         boolean isAdmin = esAdmin(authentication);
         String username = authentication.getName();
-
         model.addAttribute("pedidos", pedidoService.listarPedidos(username, isAdmin));
-        model.addAttribute("username", username); // Agregado
-        model.addAttribute("isAdmin", isAdmin);   // Agregado
+        model.addAttribute("username", username);
+        model.addAttribute("isAdmin", isAdmin);
         return "pedidos/historial";
     }
 
     @PostMapping("/eliminar/{id}")
     public String eliminarPedido(@PathVariable Long id, Authentication authentication) {
         Pedido pedido = pedidoService.buscarPorId(id);
-
-        if (pedido == null) {
-            return "redirect:/pedidos/historial?error=noencontrado";
-        }
-
+        if (pedido == null) return "redirect:/pedidos/historial";
         boolean isAdmin = esAdmin(authentication);
-
-        if (!isAdmin && !pedido.getNombreCliente().equals(authentication.getName())) {
-            log.warn("Intento de borrado no autorizado por: {}", authentication.getName());
-            return "redirect:/pedidos/historial?error=noautorizado";
-        }
-
+        if (!isAdmin && !pedido.getNombreCliente().equals(authentication.getName())) return "redirect:/pedidos/historial";
         pedidoService.eliminarPedido(id);
-        log.info("Pedido con ID {} eliminado por: {}", id, authentication.getName());
-
         return "redirect:/pedidos/historial";
     }
 
-    //evitar repetir la lógica del rol ADMIN
     private boolean esAdmin(Authentication authentication) {
-        return authentication.getAuthorities().stream()
+        return authentication != null && authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .anyMatch(role -> role.equals("ROLE_ADMIN"));
     }

@@ -4,25 +4,54 @@
     <meta charset="UTF-8">
     <title>Menú - Panadería Tu Pan</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; }
+        .card {
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            transition: transform 0.2s;
+        }
+        .card:hover { box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .card-title { color: #28a745; font-weight: bold; }
+        .price { font-size: 1.25rem; font-weight: bold; color: #333; }
+        .badge-disponible { background-color: #198754; color: white; padding: 5px 10px; border-radius: 5px; font-size: 0.85rem; }
+    </style>
 </head>
-<body class="bg-light">
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-5">
     <div class="container">
-        <a class="navbar-brand" href="#">Panadería Tu Pan | <span th:text="${username}">Usuario</span> <span th:if="${isAdmin}">(Admin)</span></a>
+        <a class="navbar-brand" href="#">Panadería Tu Pan | <span th:text="${username}">Usuario</span></a>
         <div class="navbar-nav ms-auto">
             <a class="nav-link active" th:href="@{/productos/menu}">Ver Menú</a>
             <a class="nav-link" th:href="@{/pedidos/nuevo}">Hacer Pedido</a>
             <a class="nav-link" th:href="@{/pedidos/historial}">Historial</a>
-            <form th:action="@{/logout}" method="post"><button type="submit" class="btn btn-outline-danger btn-sm">Salir</button></form>
+            <form th:action="@{/logout}" method="post" class="ms-3">
+                <button type="submit" class="btn btn-outline-danger btn-sm">Salir</button>
+            </form>
         </div>
     </div>
 </nav>
+
 <div class="container">
+    <h2 class="text-center mb-5 text-primary">Nuestro Menú Tradicional</h2>
+
     <div class="row">
-        <div class="col-md-4" th:each="prod : ${productos}">
-            <div class="card mb-3"><div class="card-body"><h5 th:text="${prod.nombre}"></h5><p th:text="${prod.precio}"></p></div></div>
+        <div class="col-md-4 mb-4" th:each="prod : ${productos}">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title" th:text="${prod.nombre}">Nombre del Producto</h5>
+                    <p class="card-text text-muted" th:text="${prod.descripcion}">Descripción breve del producto</p>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <span class="price" th:text="'₡' + ${prod.precio}">0.00</span>
+                        <span class="badge-disponible">Disponible</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

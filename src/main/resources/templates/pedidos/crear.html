@@ -23,13 +23,17 @@
         <form th:action="@{/pedidos/guardar}" th:object="${pedido}" method="post">
             <div class="mb-3">
                 <label>Nombre del Cliente</label>
-                <input type="text" class="form-control" th:field="*{nombreCliente}" th:readonly="${!isAdmin}">
+                <input type="text" class="form-control" th:field="*{nombreCliente}" th:readonly="${!isAdmin}" required>
             </div>
             <div class="mb-3">
                 <label>Producto</label>
-                <select class="form-select" th:field="*{producto.id}">
-                    <option th:each="prod : ${productos}" th:value="${prod.id}" th:text="${prod.nombre}"></option>
+                <select class="form-select" name="productoId" id="productoId" required>
+                    <option value="" disabled selected>Seleccione un producto...</option>
+                    <option th:each="prod : ${productos}"
+                            th:value="${prod.id}"
+                            th:text="${prod.nombre}"></option>
                 </select>
+                <div class="text-danger mt-1" th:if="${errorProducto}" th:text="${errorProducto}"></div>
             </div>
             <button type="submit" class="btn btn-success">Crear Pedido</button>
         </form>

@@ -12,7 +12,7 @@ import jakarta.persistence.*;
 public class Producto{
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) //Auto incremental
+    @GeneratedValue(strategy = GenerationType.IDENTITY) //auto incremental
     private Long id;
     private String nombre;
     private String descripcion;

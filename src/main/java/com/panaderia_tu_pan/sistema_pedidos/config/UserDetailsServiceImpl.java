@@ -30,7 +30,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 usuario.getRoles().stream()
                         .map(role -> {
                             String nombreRol = role.getNombre();
-                            // Si ya trae ROLE_, lo dejamos; si no, se lo ponemos
+                            //si ya trae ROLE, lo dejamos; si no, se lo ponemos
                             return nombreRol.startsWith("ROLE_") ?
                                     new SimpleGrantedAuthority(nombreRol) :
                                     new SimpleGrantedAuthority("ROLE_" + nombreRol);

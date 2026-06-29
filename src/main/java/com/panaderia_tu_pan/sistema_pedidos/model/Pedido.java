@@ -22,7 +22,6 @@ public class Pedido {
     @Column(nullable = false)
     private String nombreCliente;
 
-    @NotNull(message = "Debe seleccionar un producto")
     @ManyToOne
     @JoinColumn(name = "producto_id", nullable = false)
     private Producto producto;

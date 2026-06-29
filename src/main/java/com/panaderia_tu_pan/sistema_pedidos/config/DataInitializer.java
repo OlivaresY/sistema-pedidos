@@ -18,7 +18,7 @@ public class DataInitializer implements CommandLineRunner {
     public void run(String... args) throws Exception {
         if (productoRepository.count() == 0) {
             List<Producto> productos = List.of(
-                    // --- PRODUCTOS (Panadería) ---
+                    // --- producto inicial ---
                     new Producto(null, "Baguette Tradicional", "Pan francés crujiente", 1200.0, true),
                     new Producto(null, "Croissant de Mantequilla", "Hojaldrado y suave", 1500.0, true),
                     new Producto(null, "Empanada de Carne", "Rellena de carne seleccionada", 1300.0, true),
@@ -30,12 +30,12 @@ public class DataInitializer implements CommandLineRunner {
                     new Producto(null, "Donas Glaseadas", "Suaves con glaseado real", 850.0, true),
                     new Producto(null, "Pan de Ajo", "Con finas hierbas", 1000.0, true),
 
-                    // --- BEBIDAS CALIENTES ---
+                    // --- bebidas calientes ---
                     new Producto(null, "Café Negro", "Recién chorreado", 800.0, true),
                     new Producto(null, "Capuccino", "Con espuma cremosa", 2000.0, true),
                     new Producto(null, "Chocolate Caliente", "Hecho con leche entera", 1800.0, true),
 
-                    // --- BEBIDAS FRÍAS ---
+                    // --- bebidas frias ---
                     new Producto(null, "Té Frío Limón", "Natural y refrescante", 1200.0, true),
                     new Producto(null, "Batido de Fresa", "Con leche fresca", 2200.0, true)
             );

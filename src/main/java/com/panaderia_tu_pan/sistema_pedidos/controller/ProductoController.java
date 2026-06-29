@@ -18,15 +18,15 @@ public class ProductoController {
 
     @GetMapping("/productos/menu")
     public String verMenu(Model model, Authentication authentication) {
-        // Pedimos los productos al Service
+        //pedimos los productos al Service
         model.addAttribute("productos", productoService.listaPrdocutos());
 
-        // Verificamos si el usuario está autenticado para enviar los datos al menú
+        //verifica si el usuario autenticado para enviar los datos al menú
         if (authentication != null && authentication.isAuthenticated()) {
             model.addAttribute("username", authentication.getName());
             model.addAttribute("isAdmin", esAdmin(authentication));
         } else {
-            // Valores por defecto si no hay nadie logueado
+            //valores por defecto si no hay nadie logueado
             model.addAttribute("username", "Invitado");
             model.addAttribute("isAdmin", false);
         }
@@ -34,7 +34,6 @@ public class ProductoController {
         return "productos/menu";
     }
 
-    // Método necesario para que el compilador no marque error
     private boolean esAdmin(Authentication authentication) {
         return authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
